@@ -27,9 +27,9 @@
         
         /* BACKGROUNDS */
         #canvas-top { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at center, #111 0%, #000 100%); }
-        /* Middle Canvas has a solid background to cleanly separate sections */
         #canvas-middle { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; background: #050505; }
         #canvas-bottom { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; background: transparent; }
+        #canvas-lightning { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; opacity: 0.6; }
 
         /* GLASS & INPUTS */
         .glass-card { background: rgba(20, 20, 20, 0.7); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2); transition: all 0.4s ease; }
@@ -72,26 +72,79 @@
         .rotating-inner { position: absolute; inset: 2px; background: #050505; border-radius: 50%; z-index: 0; display: flex; align-items: center; justify-content: center; }
         @keyframes rotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* 3D GALLERY */
-        .gallery-viewport { position: relative; width: 100%; height: 450px; overflow: hidden; display: flex; align-items: center; justify-content: center; perspective: 1000px; touch-action: none; cursor: grab; }
-        .gallery-viewport:active { cursor: grabbing; }
-        .gallery-ring { position: absolute; transform-style: preserve-3d; transition: transform 0.1s ease-out; }
-        .gallery-ring.interacting .gallery-item { box-shadow: 0 0 30px var(--secondary); border-color: var(--secondary); }
-        .gallery-item {
-            position: absolute; top: 50%; left: 50%;
-            width: 260px; height: 180px; margin-left: -130px; margin-top: -90px;
-            background: rgba(255,255,255,0.05); border: 1px solid rgba(0, 242, 255, 0.3);
-            border-radius: 8px; overflow: hidden;
-            transform-style: preserve-3d; transition: 0.3s;
-            -webkit-box-reflect: below 5px linear-gradient(transparent, transparent, rgba(0,0,0,0.3));
+        /* --- UPGRADED 3D GALLERY (ATOMIC VORTEX) --- */
+        .gallery-viewport { 
+            position: relative; 
+            width: 100%; 
+            height: 600px; /* Taller for impact */
+            overflow: hidden; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            perspective: 1500px; 
+            touch-action: none; 
+            cursor: grab; 
+            background: radial-gradient(circle at center, #111 0%, #000 80%);
         }
-        .gallery-item img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
-        @media (max-width: 768px) { .gallery-viewport { height: 300px; perspective: 800px; } .gallery-item { width: 160px; height: 110px; margin-left: -80px; margin-top: -55px; } }
+        .gallery-viewport:active { cursor: grabbing; }
+        
+        .gallery-ring { 
+            position: relative; 
+            width: 0; height: 0;
+            transform-style: preserve-3d; 
+            transition: transform 0.1s cubic-bezier(0.1, 0.7, 1.0, 0.1);
+        }
+        
+        .gallery-item {
+            position: absolute; 
+            top: 50%; left: 50%;
+            width: 220px; height: 300px; /* Portrait cards */
+            margin-left: -110px; margin-top: -150px;
+            background: rgba(0,0,0,0.8); 
+            border: 2px solid var(--secondary);
+            box-shadow: 0 0 15px var(--secondary), inset 0 0 20px rgba(0, 242, 255, 0.2);
+            border-radius: 12px; 
+            overflow: hidden;
+            transform-style: preserve-3d; 
+            transition: border-color 0.3s, box-shadow 0.3s;
+            backface-visibility: hidden;
+            /* Holographic Scanline Effect */
+            background-image: linear-gradient(0deg, transparent 24%, rgba(0, 242, 255, .1) 25%, rgba(0, 242, 255, .1) 26%, transparent 27%, transparent 74%, rgba(0, 242, 255, .1) 75%, rgba(0, 242, 255, .1) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(0, 242, 255, .1) 25%, rgba(0, 242, 255, .1) 26%, transparent 27%, transparent 74%, rgba(0, 242, 255, .1) 75%, rgba(0, 242, 255, .1) 76%, transparent 77%, transparent);
+            background-size: 30px 30px;
+        }
+
+        .gallery-item:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 30px var(--primary), inset 0 0 20px rgba(255, 107, 0, 0.3);
+            z-index: 100;
+        }
+
+        .gallery-item img { 
+            width: 100%; height: 100%; 
+            object-fit: cover; 
+            pointer-events: none; 
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+        .gallery-item:hover img { opacity: 1; }
+
+        /* Number tag on image */
+        .gallery-tag {
+            position: absolute; bottom: 10px; right: 10px;
+            background: rgba(0,0,0,0.8); color: var(--secondary);
+            padding: 2px 8px; border-radius: 4px; font-family: 'Rajdhani'; font-weight: bold;
+            border: 1px solid var(--secondary);
+        }
+
+        @media (max-width: 768px) { 
+            .gallery-viewport { height: 500px; perspective: 1000px; } 
+            .gallery-item { width: 140px; height: 200px; margin-left: -70px; margin-top: -100px; } 
+        }
 
         /* Lightbox */
         .lightbox { position: fixed; inset: 0; z-index: 10000; background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.3s; }
         .lightbox.open { opacity: 1; pointer-events: all; }
-        .lightbox img { max-width: 95%; max-height: 95%; border: 2px solid var(--primary); transform: scale(0.9); transition: 0.3s; }
+        .lightbox img { max-width: 95%; max-height: 95%; border: 2px solid var(--primary); box-shadow: 0 0 50px var(--primary); transform: scale(0.9); transition: 0.3s; }
         .lightbox.open img { transform: scale(1); }
         .lightbox-close { position: absolute; top: 20px; right: 20px; color: white; font-size: 40px; cursor: pointer; }
 
@@ -99,7 +152,6 @@
         .ai-response-box table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; }
         .ai-response-box th { background: rgba(255, 107, 0, 0.2); color: var(--primary); padding: 5px; text-align: left; }
         .ai-response-box td { border-bottom: 1px solid rgba(255,255,255,0.1); padding: 5px; }
-        .color-swatch { width: 20px; height: 20px; border-radius: 50%; display: inline-block; border: 1px solid #fff; margin-right: 5px; vertical-align: middle; }
     </style>
 </head>
 <body>
@@ -136,13 +188,32 @@
         </div>
     </section>
 
-    <!-- GALLERY -->
+    <!-- UPDATED DYNAMIC GALLERY SECTION -->
     <section id="gallery" class="relative bg-black overflow-hidden border-y border-white/10">
-        <div class="absolute top-0 left-0 w-full h-20 bg-gradient-to-b from-black to-transparent z-10 pointer-events-none"></div>
-        <div class="relative z-20 text-center pt-10 pb-4 pointer-events-none"><h2 class="text-4xl font-bold text-white tracking-widest">OUR <span class="text-[#00f2ff]">GOLD</span> STANDARD</h2><p class="text-gray-400 text-sm mt-2">Swipe to Rotate • Click to Zoom</p></div>
-        <div class="gallery-viewport" id="gallery-viewport"><div class="gallery-ring" id="gallery-ring"></div></div>
-        <div class="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-black to-transparent z-10 pointer-events-none"></div>
+        <!-- Lightning Canvas Background -->
+        <canvas id="canvas-lightning"></canvas>
+        
+        <div class="absolute top-0 left-0 w-full h-20 bg-gradient-to-b from-black to-transparent z-20 pointer-events-none"></div>
+        
+        <div class="relative z-30 text-center pt-12 pb-4 pointer-events-none">
+            <h2 class="text-4xl md:text-6xl font-bold text-white tracking-widest mb-2" style="text-shadow: 0 0 20px rgba(0, 242, 255, 0.5);">
+                <span class="text-[#00f2ff]">NEON</span> COLLECTION
+            </h2>
+            <p class="text-gray-400 text-sm mt-2 tracking-[0.3em] uppercase">
+                <i class="fas fa-sync fa-spin text-orange-500 mr-2"></i> Drag to Spin • Click to Expand
+            </p>
+        </div>
+
+        <!-- 3D Viewport -->
+        <div class="gallery-viewport" id="gallery-viewport">
+            <div class="gallery-ring" id="gallery-ring">
+                <!-- Images 1-20 will be injected here via JS -->
+            </div>
+        </div>
+
+        <div class="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-black to-transparent z-20 pointer-events-none"></div>
     </section>
+    
     <div class="lightbox" id="lightbox"><span class="lightbox-close" onclick="closeLightbox()">&times;</span><img id="lightbox-img" src="" alt="Full View"></div>
 
     <!-- SERVICES -->
@@ -184,9 +255,7 @@
             <div class="text-center mb-16"><span class="text-[#00f2ff] text-sm font-bold tracking-widest uppercase mb-2 block"><i class="fas fa-sparkles"></i> Powered by Gemini AI</span><h2 class="text-4xl font-bold mb-4 text-white">SMART <span class="text-[#00f2ff]">CONSULTANT</span></h2><p class="text-gray-400 max-w-2xl mx-auto">Instant construction intelligence at your fingertips.</p></div>
             <div class="grid md:grid-cols-3 gap-6">
                 <div class="glass-card p-6 rounded-2xl border-t-4 border-[#00f2ff]"><h3 class="text-lg font-bold text-white mb-4 gap-2 flex items-center"><i class="fas fa-calculator text-[#00f2ff]"></i> Cost Estimator</h3><div class="space-y-3 text-sm"><input type="number" id="ai-area" class="input-field w-full p-2 rounded-lg" placeholder="Area (Sq. Ft)"><select id="ai-quality" class="input-field w-full p-2 rounded-lg"><option>Standard</option><option>Premium</option></select><button onclick="generateCostEstimate()" id="btn-estimate" class="w-full py-2 bg-[#00f2ff]/20 text-[#00f2ff] border border-[#00f2ff] rounded-lg font-bold">✨ ESTIMATE</button></div><div id="result-estimate" class="mt-4 text-xs text-gray-400 ai-response-box hidden"></div></div>
-                <!-- ADDED: Date input for Scheduler -->
                 <div class="glass-card p-6 rounded-2xl border-t-4 border-purple-500"><h3 class="text-lg font-bold text-white mb-4 gap-2 flex items-center"><i class="fas fa-calendar-alt text-purple-500"></i> Scheduler</h3><div class="space-y-3 text-sm"><select id="ai-project-type" class="input-field w-full p-2 rounded-lg"><option>New House</option><option>Renovation</option></select><input type="date" id="ai-start-date" class="input-field w-full p-2 rounded-lg"><button onclick="generateSchedule()" id="btn-schedule" class="w-full py-2 bg-purple-500/20 text-purple-400 border border-purple-500 rounded-lg font-bold">✨ PLAN</button></div><div id="result-schedule" class="mt-4 text-xs text-gray-400 ai-response-box hidden"></div></div>
-                <!-- ADDED: Second input for Comparison -->
                 <div class="glass-card p-6 rounded-2xl border-t-4 border-green-500"><h3 class="text-lg font-bold text-white mb-4 gap-2 flex items-center"><i class="fas fa-balance-scale text-green-500"></i> Compare</h3><div class="space-y-3 text-sm"><input type="text" id="ai-material-a" class="input-field w-full p-2 rounded-lg" placeholder="Item A"><input type="text" id="ai-material-b" class="input-field w-full p-2 rounded-lg" placeholder="Item B"><button onclick="compareMaterials()" id="btn-compare" class="w-full py-2 bg-green-500/20 text-green-400 border border-green-500 rounded-lg font-bold">✨ COMPARE</button></div><div id="result-compare" class="mt-4 text-xs text-gray-400 ai-response-box hidden"></div></div>
                 <div class="glass-card p-6 rounded-2xl border-t-4 border-orange-500 md:col-span-2"><h3 class="text-lg font-bold text-white mb-4 gap-2 flex items-center"><i class="fas fa-comments text-orange-500"></i> Vastu Chat</h3><div class="flex gap-2"><input type="text" id="chat-input" class="input-field flex-grow p-2 rounded-lg text-sm" placeholder="Question..."><button onclick="sendChatMessage()" id="btn-chat" class="w-10 h-10 bg-orange-600 rounded-lg text-white"><i class="fas fa-paper-plane"></i></button></div><div id="chat-history" class="mt-2 h-20 overflow-y-auto text-xs text-gray-400"></div></div>
                 <div class="glass-card p-6 rounded-2xl border-t-4 border-pink-500"><h3 class="text-lg font-bold text-white mb-4 gap-2 flex items-center"><i class="fas fa-book text-pink-500"></i> Decoder</h3><div class="flex gap-2"><input type="text" id="ai-jargon-input" class="input-field flex-grow p-2 rounded-lg text-sm" placeholder="Term..."><button onclick="explainJargon()" id="btn-jargon" class="w-10 h-10 bg-pink-600 rounded-lg text-white"><i class="fas fa-search"></i></button></div><div id="result-jargon" class="mt-4 text-xs text-gray-300 hidden"></div></div>
@@ -210,7 +279,6 @@
         const SERVICE_ID = "service_d5404dw";
         const TEMPLATE_ID = "template_rg6sr9f";
 
-        // Quote Form -> EmailJS
         document.getElementById('contact-form').addEventListener('submit', function(e) {
             e.preventDefault(); const btn = document.getElementById('send-btn'); btn.innerText = 'SENDING...';
             const params = { user_name: document.getElementById('form-name').value, user_phone: document.getElementById('form-phone').value, message: document.getElementById('msg-area').value, source: "Contact Form" };
@@ -220,21 +288,162 @@
             }, (err) => { alert("Email Error: " + JSON.stringify(err)); btn.innerText = 'SEND ENQUIRY'; });
         });
 
-        /* --- 2. GALLERY LOGIC --- */
-        const galleryImages = ["https://ayushbiki.github.io/Apna-Ghar-Construction/1.jpg", "https://ayushbiki.github.io/Apna-Ghar-Construction/2.jpg", "https://ayushbiki.github.io/Apna-Ghar-Construction/3.jpg", "https://ayushbiki.github.io/Apna-Ghar-Construction/4.jpg", "https://ayushbiki.github.io/Apna-Ghar-Construction/5.jpg", "https://ayushbiki.github.io/Apna-Ghar-Construction/6.jpg", "https://ayushbiki.github.io/Apna-Ghar-Construction/7.jpg", "https://ayushbiki.github.io/Apna-Ghar-Construction/8.jpg", "https://ayushbiki.github.io/Apna-Ghar-Construction/9.jpg", "https://ayushbiki.github.io/Apna-Ghar-Construction/10.jpg", "https://ayushbiki.github.io/Apna-Ghar-Construction/11.jpg", "https://ayushbiki.github.io/Apna-Ghar-Construction/12.jpg", "https://ayushbiki.github.io/Apna-Ghar-Construction/13.jpg", "https://ayushbiki.github.io/Apna-Ghar-Construction/14.jpg", "https://ayushbiki.github.io/Apna-Ghar-Construction/15.jpg", "https://ayushbiki.github.io/Apna-Ghar-Construction/16.jpg", "https://ayushbiki.github.io/Apna-Ghar-Construction/17.jpg", "https://ayushbiki.github.io/Apna-Ghar-Construction/18.jpg", "https://ayushbiki.github.io/Apna-Ghar-Construction/19.jpg", "https://ayushbiki.github.io/Apna-Ghar-Construction/20.jpg"];
+        /* --- 2. UPGRADED DYNAMIC GALLERY LOGIC (Lightning + 20 Images) --- */
         let radius=0, currentAngle=0, targetAngle=0, isDragging=false, startX=0, lastX=0;
-        function initGallery() { const ring=document.getElementById('gallery-ring'), viewport=document.getElementById('gallery-viewport'); if(!ring)return; const isMobile=window.innerWidth<768, widthItem=isMobile?180:260, count=galleryImages.length; radius=Math.round((count*widthItem)/(2*Math.PI))-30; ring.innerHTML=''; galleryImages.forEach((url,i)=>{ const d=document.createElement('div'); d.className='gallery-item'; d.style.transform=`rotateY(${i*(360/count)}deg) translateZ(${radius}px)`; d.onclick=()=>openLightbox(url); d.innerHTML=`<img src="${url}">`; ring.appendChild(d); }); ring.style.transform=`translateZ(-${radius}px) rotateY(0deg)`;
-        const start=x=>{isDragging=true;startX=x;lastX=x;ring.classList.add('interacting');}, move=x=>{if(!isDragging)return;const d=x-lastX;lastX=x;targetAngle+=d*0.15;}, end=()=>{isDragging=false;ring.classList.remove('interacting');};
-        viewport.addEventListener('mousedown',e=>start(e.clientX)); viewport.addEventListener('touchstart',e=>start(e.touches[0].clientX)); window.addEventListener('mousemove',e=>move(e.clientX)); window.addEventListener('touchmove',e=>move(e.touches[0].clientX)); window.addEventListener('mouseup',end); window.addEventListener('touchend',end); animateGallery(); }
-        function animateGallery() { if(!isDragging)targetAngle-=0.02; currentAngle+=(targetAngle-currentAngle)*0.05; const r=document.getElementById('gallery-ring'); if(r)r.style.transform=`translateZ(-${radius}px) rotateY(${currentAngle}deg)`; requestAnimationFrame(animateGallery); }
-        function openLightbox(src) { document.getElementById('lightbox-img').src=src; document.getElementById('lightbox').classList.add('open'); } function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); }
         
-        /* --- 4. BACKGROUNDS --- */
+        function initGallery() { 
+            const ring=document.getElementById('gallery-ring'), viewport=document.getElementById('gallery-viewport'); 
+            if(!ring)return; 
+            
+            const isMobile=window.innerWidth<768;
+            // Using 20 images. We'll map them 1.jpg to 20.jpg
+            const count = 20;
+            // Make the ring larger for 20 images
+            const widthItem = isMobile ? 160 : 220; 
+            radius = Math.round((count * widthItem) / (2 * Math.PI)) + 50; // +50 for breathing room
+            
+            ring.innerHTML=''; 
+            
+            for(let i=1; i<=count; i++) {
+                const url = `${i}.jpg`; // Assuming 1.jpg, 2.jpg... in root
+                const d = document.createElement('div');
+                d.className = 'gallery-item';
+                
+                // Atomic Layout: Tilt every other image slightly for a chaotic/active look
+                const angle = i * (360 / count);
+                d.style.transform = `rotateY(${angle}deg) translateZ(${radius}px)`;
+                
+                // Add onerror handler to fallback to placeholder if image missing
+                d.innerHTML=`<img src="${url}" onerror="this.src='https://via.placeholder.com/220x300/00f2ff/000?text=Img+${i}'"><div class="gallery-tag">#${i}</div>`;
+                d.onclick = () => openLightbox(url);
+                ring.appendChild(d);
+            } 
+            
+            // Initial Tilt for "Atomic" look
+            ring.style.transform=`translateZ(-${radius}px) rotateY(0deg) rotateX(-5deg)`;
+
+            // Drag Logic
+            const start=x=>{isDragging=true;startX=x;lastX=x;ring.parentElement.style.cursor='grabbing';};
+            const move=x=>{if(!isDragging)return;const d=x-lastX;lastX=x;targetAngle+=d*0.2;}; // Increased sensitivity
+            const end=()=>{isDragging=false;ring.parentElement.style.cursor='grab';};
+            
+            viewport.addEventListener('mousedown',e=>start(e.clientX)); 
+            viewport.addEventListener('touchstart',e=>start(e.touches[0].clientX)); 
+            window.addEventListener('mousemove',e=>move(e.clientX)); 
+            window.addEventListener('touchmove',e=>move(e.touches[0].clientX)); 
+            window.addEventListener('mouseup',end); 
+            window.addEventListener('touchend',end); 
+            
+            animateGallery(); 
+        }
+
+        function animateGallery() { 
+            // Inertia
+            if(!isDragging) targetAngle -= 0.05; // Constant slow rotation
+            currentAngle += (targetAngle - currentAngle) * 0.05; 
+            
+            const r = document.getElementById('gallery-ring'); 
+            if(r) {
+                // Combine Y rotation (spinning) with slight X tilt for 3D effect
+                r.style.transform = `translateZ(-${radius}px) rotateY(${currentAngle}deg) rotateX(-5deg)`; 
+            }
+            requestAnimationFrame(animateGallery); 
+        }
+        
+        function openLightbox(src) { 
+            const img = document.getElementById('lightbox-img');
+            img.src=src; 
+            // Check if image loads, if not, don't open or show error
+            img.onerror = function(){ this.src='https://via.placeholder.com/800x600/000/fff?text=Image+Not+Found'; };
+            document.getElementById('lightbox').classList.add('open'); 
+        } 
+        
+        function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); }
+
+        /* --- 3. LIGHTNING EFFECT (CANVAS) --- */
+        function initLightning() {
+            const c = document.getElementById('canvas-lightning');
+            if(!c) return;
+            const ctx = c.getContext('2d');
+            let w, h;
+            
+            const resize = () => { w = c.width = c.offsetWidth; h = c.height = c.offsetHeight; };
+            window.addEventListener('resize', resize);
+            resize();
+
+            const bolts = [];
+            
+            function createBolt() {
+                // Start from random position at top or bottom
+                const startX = Math.random() * w;
+                const startY = Math.random() > 0.5 ? 0 : h;
+                const endX = Math.random() * w;
+                const endY = h/2 + (Math.random() - 0.5) * 200; // Converge near middle
+                
+                bolts.push({
+                    x: startX, y: startY,
+                    tx: endX, ty: endY,
+                    segments: [],
+                    life: 1, // Opacity
+                    color: Math.random() > 0.5 ? '#00f2ff' : '#ffffff' // Cyan or White
+                });
+                
+                // Generate jagged path
+                let currX = startX, currY = startY;
+                const steps = 15;
+                const dx = (endX - startX)/steps;
+                const dy = (endY - startY)/steps;
+                
+                for(let i=0; i<steps; i++) {
+                    bolts[bolts.length-1].segments.push({x: currX, y: currY});
+                    currX += dx + (Math.random()-0.5)*30; // Jitter
+                    currY += dy + (Math.random()-0.5)*30;
+                }
+                bolts[bolts.length-1].segments.push({x: endX, y: endY});
+            }
+
+            function animateLightning() {
+                ctx.clearRect(0, 0, w, h);
+                
+                // Randomly spawn bolt (low chance)
+                if(Math.random() < 0.03) createBolt();
+                
+                for(let i=0; i<bolts.length; i++) {
+                    const b = bolts[i];
+                    ctx.beginPath();
+                    ctx.strokeStyle = b.color;
+                    ctx.lineWidth = 2;
+                    ctx.globalAlpha = b.life;
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = b.color;
+                    
+                    ctx.moveTo(b.segments[0].x, b.segments[0].y);
+                    for(let j=1; j<b.segments.length; j++) {
+                        ctx.lineTo(b.segments[j].x, b.segments[j].y);
+                    }
+                    ctx.stroke();
+                    
+                    b.life -= 0.05; // Fade out
+                }
+                
+                // Remove dead bolts
+                for(let i=bolts.length-1; i>=0; i--) {
+                    if(bolts[i].life <= 0) bolts.splice(i, 1);
+                }
+                
+                requestAnimationFrame(animateLightning);
+            }
+            animateLightning();
+        }
+
+        /* --- 4. BACKGROUNDS & INIT --- */
         window.addEventListener('load', () => { 
             gsap.to('#loader', {opacity:0, duration:0.5, delay:1.5, onComplete:()=>document.getElementById('loader').style.display='none'}); 
             initTopWave();      // Orange Wave (Top)
             initNeonWave();     // Blue Neon (Middle)
             initStarryNight();  // Stars (Bottom)
+            initGallery();      // THE NEW 20 IMAGE GALLERY
+            initLightning();    // THE LIGHTNING EFFECT
             initTypewriter(); 
         });
 
@@ -242,7 +451,8 @@
         
         /* --- ANIMATION 1: ORANGE DOTS WAVE (TOP) --- */
         function initTopWave() {
-            const c=document.getElementById('canvas-top'), s=new THREE.Scene(), cam=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,1000), r=new THREE.WebGLRenderer({alpha:true,antialias:true});
+            const c=document.getElementById('canvas-top'); if(!c) return;
+            const s=new THREE.Scene(), cam=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,1000), r=new THREE.WebGLRenderer({alpha:true,antialias:true});
             r.setSize(window.innerWidth,window.innerHeight); c.appendChild(r.domElement);
             const g=new THREE.BufferGeometry(), pos=[], cnt=60, sep=1.2;
             for(let x=0; x<cnt; x++) for(let z=0; z<cnt; z++) pos.push((x-cnt/2)*sep, 0, (z-cnt/2)*sep);
@@ -254,7 +464,6 @@
                 requestAnimationFrame(animate); t += 0.015; // Speed
                 const p = g.attributes.position.array;
                 for(let i=0; i<p.length; i+=3) {
-                    // 2x Amplitude (1.8) & Low Frequency (0.15) for Professional Ripples
                     p[i+1] = Math.sin(p[i]*0.15 + t) * 1.8 + Math.cos(p[i+2]*0.12 + t) * 1.8;
                 }
                 g.attributes.position.needsUpdate = true; r.render(s, cam);
