@@ -464,9 +464,9 @@
             animate();
         }
 
-        /* --- 5. AI (STRICT: GEMINI 1.5 FLASH ONLY) --- */
-        const userKey = "AIzaSyCx5yqLzl-cPW9WCwyaQXNl3ls8X7BPK9Q"; 
-        const MODEL = "gemini-1.5-flash"; // v1.5 Flash (Standard)
+        /* --- 5. AI (UPDATED: GEMINI 2.5 FLASH) --- */
+        const userKey = "AlzaSyBvSup7FvWevUX4HTQnoY8E5NV3u_aCBmw"; // Correct Key from Screenshot
+        const MODEL = "gemini-2.5-flash"; // Updated to standard 2.5 Flash
 
         async function callGemini(prompt) {
             document.body.style.cursor = 'wait';
@@ -487,7 +487,7 @@
                     console.error("AI API Error:", data);
                     let msg = `Error ${response.status}: ${data.error?.message || 'Unknown Error'}`;
                     // Unique Version ID to verify code update
-                    alert(`⚠️ AI Failed (v2.0).\n\nReason: ${msg}\n\nFix: Check Google AI Studio > API Keys.`);
+                    alert(`⚠️ AI Failed (v3.0 Fixed).\n\nReason: ${msg}\n\nFix: Check Google AI Studio > API Keys.`);
                     return "⚠️ AI Error.";
                 }
                 
