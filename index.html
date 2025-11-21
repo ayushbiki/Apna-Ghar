@@ -464,9 +464,11 @@
             animate();
         }
 
-        /* --- 5. AI (UPDATED: GEMINI 2.5 FLASH) --- */
-        const userKey = "AlzaSyBvSup7FvWevUX4HTQnoY8E5NV3u_aCBmw"; // Correct Key from Screenshot
-        const MODEL = "gemini-2.5-flash"; // Updated to standard 2.5 Flash
+        /* --- 5. AI (FINAL FIX: "AIza" TYPO CORRECTED) --- */
+        // NOTE: All Google API Keys start with "AIza" (Capital A, Capital I, z, a)
+        // The previous key had a lowercase "l" (Alza) which caused Error 400.
+        const userKey = "AIzaSyBvSup7FvWevUX4HTQnoY8E5NV3u_aCBmw"; 
+        const MODEL = "gemini-2.5-flash"; // Kept your updated model
 
         async function callGemini(prompt) {
             document.body.style.cursor = 'wait';
@@ -486,8 +488,8 @@
                 if (!response.ok) { 
                     console.error("AI API Error:", data);
                     let msg = `Error ${response.status}: ${data.error?.message || 'Unknown Error'}`;
-                    // Unique Version ID to verify code update
-                    alert(`⚠️ AI Failed (v3.0 Fixed).\n\nReason: ${msg}\n\nFix: Check Google AI Studio > API Keys.`);
+                    // Detailed Error to help debugging
+                    alert(`⚠️ AI Failed (Final Fix).\n\nReason: ${msg}\n\nKey Sent: ${userKey.substring(0,6)}... (Check if starts with 'AIza')`);
                     return "⚠️ AI Error.";
                 }
                 
