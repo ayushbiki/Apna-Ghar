@@ -379,7 +379,6 @@
                     tx: endX, ty: endY,
                     segments: [],
                     life: 1, 
-                    // Colors updated to Gold/White/Cyan mix
                     color: Math.random() > 0.6 ? '#FFD700' : (Math.random() > 0.5 ? '#00f2ff' : '#ffffff') 
                 });
                 
@@ -489,29 +488,45 @@
         }
 
         /* --- 5. AI (EMBEDDED & PROTECTED KEY) --- */
-        const envKey = ""; 
-        // Your Key Split: AIzaSyD8PuUrkmZGA1G6UI-udf7-ORgOfzishF0
-        const pA = "AIzaSyD8PuUrkmZG";
-        const pB = "A1G6UI-udf7-ORgO";
-        const pC = "fzishF0";
-        const userKey = pA + pB + pC;
+        const userKey = "AIzaSyALr4JtHcqwlNsUOmIfBkiClxgPt2N0ubw"; 
 
-        // Auto-healing models
         const MODELS = ["gemini-1.5-flash", "gemini-1.5-flash-001", "gemini-pro"];
 
         async function callGemini(prompt) {
+            // VISUAL FEEDBACK: Show a loading cursor
+            document.body.style.cursor = 'wait';
+            
             for (let model of MODELS) {
                 const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${userKey}`;
                 try {
                     const response = await fetch(url, {
-                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        method: 'POST', 
+                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
                     });
+                    
                     const data = await response.json();
-                    if (!response.ok) { if(response.status === 404) continue; return `API Error: ${data.error?.message}`; }
-                    return data.candidates?.[0]?.content?.parts?.[0]?.text || "No response text.";
-                } catch (e) { return `Network Error: ${e.message}`; }
+                    
+                    // RESET CURSOR
+                    document.body.style.cursor = 'default';
+
+                    if (!response.ok) { 
+                        console.error("AI Error:", data);
+                        if(response.status === 404) continue; // Try next model
+                        return `API Error (${response.status}): ${data.error?.message || response.statusText}`; 
+                    }
+                    
+                    return data.candidates?.[0]?.content?.parts?.[0]?.text || "No response text from AI.";
+                } catch (e) { 
+                    console.error("Network Error:", e);
+                    // Only return error if this is the last model we tried
+                    if (model === MODELS[MODELS.length - 1]) {
+                        document.body.style.cursor = 'default';
+                        return `Connection Error: ${e.message}. (This often happens in previews. Please deploy to GitHub to test properly.)`; 
+                    }
+                }
             }
+            document.body.style.cursor = 'default';
             return "⚠️ AI Unavailable. Check internet connection.";
         }
 
