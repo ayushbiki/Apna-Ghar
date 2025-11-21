@@ -466,14 +466,14 @@
             animate();
         }
 
-        /* --- 5. AI WITH AUTO-HEALING LOOP --- */
-        const userKey = "AIzaSyALr4JtHcqwlNsUOmIfBkiClxgPt2N0ubw"; 
-        // Auto-healing: Try specific version first, then alias, then pro
+        /* --- 5. AI WITH PRO KEY & AUTO-HEALING --- */
+        const userKey = "AIzaSyCx5yqLzl-cPW9WCwyaQXNl3ls8X7BPK9Q"; // NEW PRO KEY
         const MODELS = ["gemini-1.5-flash-001", "gemini-1.5-flash", "gemini-pro"];
 
         async function callGemini(prompt) {
             document.body.style.cursor = 'wait';
             
+            // Check if running locally (Preview/Localhost often blocks requests)
             if (window.location.hostname === '' || window.location.protocol === 'file:') { 
                 console.warn("Running locally. AI likely blocked by CORS."); 
             }
@@ -483,7 +483,6 @@
                 const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${userKey}`;
                 
                 try {
-                    console.log(`Trying model: ${model}`); // Debug log
                     const response = await fetch(url, { 
                         method: 'POST', 
                         headers: { 'Content-Type': 'application/json' }, 
@@ -494,14 +493,13 @@
 
                     if (!response.ok) { 
                         console.error(`Model ${model} failed:`, data);
-                        // If it's the last model and failed, show alert
                         if (i === MODELS.length - 1) {
                             document.body.style.cursor = 'default';
                             let msg = `Error ${response.status}: ${data.error?.message || 'Unknown Error'}`;
-                            alert(`⚠️ AI Failed.\n\nReason: ${msg}\n\nFix: Check Google AI Studio.`);
+                            alert(`⚠️ AI Failed.\n\nReason: ${msg}\n\nFix: Verify Key or Limits.`);
                             return "⚠️ AI Error.";
                         }
-                        continue; // Try next model
+                        continue; 
                     }
                     
                     document.body.style.cursor = 'default';
