@@ -464,13 +464,16 @@
             animate();
         }
 
-        /* --- 5. AI (FINAL EMBEDDED KEY) --- */
+        /* --- 5. AI (FINAL MANUAL FIX: PASTE KEY HERE) --- */
         const MODEL = "gemini-2.5-flash";
 
-        // AUTOMATICALLY EMBEDDED KEY
-        const part1 = "AIzaSyBZYYCN"; 
-        const part2 = "WnJevtpF2zeE-"; 
-        const part3 = "TAIHsKXtBiaKp4"; 
+        // ⚠️ PASTE_YOUR_NEW_KEY_BELOW
+        // Example: if key is "AIzaSyD...", put "AIzaSyD..." in quotes
+        // You can split it or paste it whole, just replace the strings.
+        
+        const part1 = "AIzaSy"; 
+        const part2 = "CTq56OnA8qYYmE_y3"; 
+        const part3 = "mUF198i-HQgJYTgg"; 
         
         const API_KEY = part1 + part2 + part3;
 
@@ -501,6 +504,7 @@
                 if (!response.ok) { 
                     console.error("AI API Error:", data);
                     let msg = `Error ${response.status}: ${data.error?.message || 'Unknown Error'}`;
+                    if(API_KEY.includes("PASTE_PART_1_HERE")) { msg = "You forgot to paste your new API Key into the code!"; }
                     alert(`⚠️ AI Failed.\n\nReason: ${msg}`);
                     return "⚠️ AI Error.";
                 }
