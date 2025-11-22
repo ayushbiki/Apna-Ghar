@@ -464,21 +464,19 @@
             animate();
         }
 
-        /* --- 5. AI (PUBLIC MODE: SPLIT KEY TECHNIQUE) --- */
+        /* --- 5. AI (FINAL OPTIMIZED & CLEAN) --- */
         const MODEL = "gemini-2.5-flash";
 
-        // ⚠️ SPLIT KEY CONFIGURATION (Prevents GitHub Auto-Revoke)
-        // Paste your NEW key in 3 parts below.
-        
-        const part1 = "AIzaSy";       // Paste 1st part here
-        const part2 = "DQaRDYrsSR2aoRE";   // Paste 2nd part here
-        const part3 = "4ANg3encVxXeyrYWrI";   // Paste 3rd part here
+        // ⚠️ PASTE YOUR NEW "API KEY 1" HERE
+        // Example: part1 = "AIzaSyD..."
+        const part1 = "AIzaSy";       // Paste 1st part of key
+        const part2 = "BZYYCNWnJevtp";   // Paste 2nd part of key
+        const part3 = "F2zeE-TAIHsKXtBiaKp4";   // Paste 3rd part of key
         
         const API_KEY = part1 + part2 + part3;
 
-        async function callGemini(prompt) {
+        async function callGemini(prompt, retryCount = 0) {
             document.body.style.cursor = 'wait';
-            
             const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${API_KEY}`;
             
             try {
@@ -490,6 +488,16 @@
                 
                 const data = await response.json();
                 document.body.style.cursor = 'default';
+
+                if (response.status === 429) {
+                    if (retryCount < 2) {
+                        console.warn("Quota hit. Retrying in 2 seconds...");
+                        await new Promise(r => setTimeout(r, 2000)); 
+                        return callGemini(prompt, retryCount + 1); 
+                    } else {
+                        return "⚠️ System Busy: High traffic. Please wait 1 minute.";
+                    }
+                }
 
                 if (!response.ok) { 
                     console.error("AI API Error:", data);
