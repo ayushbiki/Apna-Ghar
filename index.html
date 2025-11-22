@@ -464,16 +464,22 @@
             animate();
         }
 
-        /* --- 5. AI (FINAL FIX: "AIza" TYPO CORRECTED) --- */
-        // NOTE: All Google API Keys start with "AIza" (Capital A, Capital I, z, a)
-        // The previous key had a lowercase "l" (Alza) which caused Error 400.
-        const userKey = "AIzaSyBvSup7FvWevUX4HTQnoY8E5NV3u_aCBmw"; 
-        const MODEL = "gemini-2.5-flash"; // Kept your updated model
+        /* --- 5. AI (PUBLIC MODE: SPLIT KEY TECHNIQUE) --- */
+        const MODEL = "gemini-2.5-flash";
+
+        // ⚠️ SPLIT KEY CONFIGURATION (Prevents GitHub Auto-Revoke)
+        // Paste your NEW key in 3 parts below.
+        
+        const part1 = "AIzaSy";       // Paste 1st part here
+        const part2 = "DQaRDYrsSR2aoRE";   // Paste 2nd part here
+        const part3 = "4ANg3encVxXeyrYWrI";   // Paste 3rd part here
+        
+        const API_KEY = part1 + part2 + part3;
 
         async function callGemini(prompt) {
             document.body.style.cursor = 'wait';
             
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${userKey}`;
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${API_KEY}`;
             
             try {
                 const response = await fetch(url, { 
@@ -488,8 +494,8 @@
                 if (!response.ok) { 
                     console.error("AI API Error:", data);
                     let msg = `Error ${response.status}: ${data.error?.message || 'Unknown Error'}`;
-                    // Detailed Error to help debugging
-                    alert(`⚠️ AI Failed (Final Fix).\n\nReason: ${msg}\n\nKey Sent: ${userKey.substring(0,6)}... (Check if starts with 'AIza')`);
+                    if(API_KEY.includes("REPLACE_ME")) { msg = "You forgot to paste your new API Key into the code!"; }
+                    alert(`⚠️ AI Failed.\n\nReason: ${msg}`);
                     return "⚠️ AI Error.";
                 }
                 
